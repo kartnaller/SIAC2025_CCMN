@@ -1,147 +1,26 @@
 <!DOCTYPE html>
-<html lang='pt-br'>
+<html lang="pt-br">
 <head>
-    <meta charset='UTF-8'>
-    <title>SIAC CCMN 2025</title>
-    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css'>
-    <link rel='stylesheet' href='https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css'>
-    <link rel='stylesheet' href='https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAC CCMN 2025 - Estatísticas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
-        body { padding: 20px; background-color: #f8f9fa; }
+        body { padding-bottom: 50px; background-color: #f8f9fa; }
         .header-logo { max-height: 80px; margin-right: 20px; }
-        .page-title { color: #0056b3; /* UFRJ Blue */ }
-        .filter-card { background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;}
-        td.resumo-col { white-space: normal !important; }
-        .dt-buttons .btn { margin-left: 0.5rem; }
-        .filter-label { font-weight: bold; margin-bottom: 0.5rem; display: block; }
-        .form-select-sm { font-size: 0.875rem; }
-        #totalTrabalhosContainer { margin-top: 10px; font-weight: bold; }
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 1rem;
-        }
-        .filter-group {
-            flex-grow: 1;
-            min-width: 200px;
-        }
-        .buttons-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            min-width: 220px;
-            margin-left: auto;
-        }
-        .buttons-group .btn {
-            width: 100%;
-        }
-        @media (max-width: 991.98px) {
-            .filter-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .buttons-group {
-                margin-left: 0;
-                width: 100%;
-                flex-direction: column;
-            }
-            .filter-group {
-                width: 100%;
-            }
-        }
-         @media (max-width: 1199.98px) and (min-width: 992px) {
-            .filter-group {
-                min-width: 180px;
-            }
-        }
+        .page-title { color: #0056b3; }
+        .stats-card { margin-bottom: 20px; }
+        .stats-header { background-color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .summary-table th { background-color: #f1f1f1; }
+        .filter-group { margin-bottom: 15px; }
+        .chart-container { position: relative; height: 400px; max-width: 550px; margin: 0 auto; }
     </style>
 </head>
 <body>
-    <div class='container-fluid'>
-        <div class="d-flex align-items-center mb-4">
-            <img src="https://sistemas2.macae.ufrj.br/siac/assets/images/LogoAtualSIAC.png" alt="Logo SIAC" class="header-logo">
-            <h1 class="page-title">Semana de Integração Acadêmica - SIAc CCMN 2025</h1>
-        </div>
-
-        <!-- BARRA DE NAVEGAÇÃO -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navegação</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-table"></i> Ver Tabela de Trabalhos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="estatisticas.html"><i class="bi bi-bar-chart-line-fill"></i> Estatísticas</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <div class="filter-card">
-            <div class="filter-row">
-                <!-- Grupo de Filtros -->
-                <div class="filter-group">
-                    <label for="filtroUnidadeStatic" class="form-label filter-label">Filtrar por Unidade:</label>
-                    <select id="filtroUnidadeStatic" class="form-select form-select-sm filterable-select" data-column-name="Unidade">
-                        <option value="">Todas</option>
-                        <option value="IC">IC</option>
-                        <option value="IF">IF</option>
-                        <option value="IGEO">IGEO</option>
-                        <option value="IM">IM</option>
-                        <option value="IQ">IQ</option>
-                        <option value="NCE">NCE</option>
-                        <option value="OV">OV</option>
-                        <option value="sem-unidade-static">Sem Unidade</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filtroModalidadeStatic" class="form-label filter-label">Filtrar por Modalidade:</label>
-                    <select id="filtroModalidadeStatic" class="form-select form-select-sm filterable-select" data-column-name="Modalidade">
-                        <option value="">Todas</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filtroTipoApresentacaoStatic" class="form-label filter-label">Filtrar por Tipo de Apresentação:</label>
-                    <select id="filtroTipoApresentacaoStatic" class="form-select form-select-sm filterable-select" data-column-name="Tipo de Apresentação">
-                        <option value="">Todas</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filtroTurnoStatic" class="form-label filter-label">Filtrar por Turno:</label>
-                    <select id="filtroTurnoStatic" class="form-select form-select-sm filterable-select" data-column-name="Turno">
-                        <option value="">Todos</option>
-                        <option value="Diurno">Diurno</option>
-                        <option value="Noturno">Noturno</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="filtroMencaoHonrosaStatic" class="form-label filter-label">Filtrar por Menção Honrosa:</label>
-                    <select id="filtroMencaoHonrosaStatic" class="form-select form-select-sm filterable-select" data-column-name="Menção Honrosa">
-                        <option value="">Todas</option>
-                        <option value="Sim">Sim</option>
-                        <option value="Não">Não</option>
-                    </select>
-                </div>
-
-                <!-- Grupo de Botões (MODIFICADO) -->
-                <div class="buttons-group">
-                    <button id="exportPlanilhaTrabalhosBtn" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Exportar Planilha de Trabalhos</button>
-                </div>
-            </div>
-            <div id="totalTrabalhosContainer" class="mt-3">
-                Total de trabalhos exibidos: <span id="totalTrabalhosCount" class="badge bg-primary">0</span>
-            </div>
-        </div>
-
+    <div id="dados-brutos" style="display: none;">
         <table id='trabalhosTableStatic' class='table table-striped table-bordered w-100'>
             <thead><tr><th>ID</th><th>Título</th><th>Apresentador(es)</th><th>Autor(es)</th><th>Orientador(es)</th><th>Unidade</th><th>Modalidade</th><th>Tipo de Apresentação</th><th>Resumo</th><th>Palavras-chave</th><th>Área de Conhecimento</th><th>Linhas de Extensão</th><th>Área Temática</th><th>Turno</th></tr></thead>
             <tbody><tr data-trabalho-id='19'><td>19</td><td>ESTUDO TEÓRICO DE UM NOVO MATERIAL DE NITRETO DE BORO ANÁLOGO AO TOLANENO</td><td>EDUARDO SOARES DA SILVA PEREIRA  - Nanotecnologia -</td><td>EDUARDO SOARES DA SILVA PEREIRA  - Nanotecnologia -</td><td>MARCOS GONÇALVES DE MENEZES - Instituto de Fisica - CCMN - marcosgm@if.ufrj.br</td><td class='unidade-cell'>IF</td><td>Pesquisa</td><td>Oral</td><td class='resumo-col'><span class='resumo-curto'>O tolaneno é um novo material bidimensional, alótropo do carbono [1], composto por anéis de 4, 6, 8 e 12 átomos, que pode, teoricamente, ser obtido através de um processo químico semelhante à obtenção…</span><span class='resumo-completo' style='display:none;'>O tolaneno é um novo material bidimensional, alótropo do carbono [1], composto por anéis de 4, 6, 8 e 12 átomos, que pode, teoricamente, ser obtido através de um processo químico semelhante à obtenção do bifenileno, outro alótropo realizado experimentalmente com sucesso. O tolaneno demonstra aplicações promissoras em baterias de íon Lítio, mas a ausência de um gap de energia limita a aplicação deste material em dispositivos eletrônicos, tal como ocorre no grafeno e outros alótropos. Nesse sentido, é comum buscar por um material isolante através da substituição dos átomos de carbono por átomos de nitrogênio e boro dispostos alternadamente na mesma estrutura. Pode−se dar como exemplo o Nitreto de Boro hexagonal (h−BN), análogo ao grafeno, e o bifenileno−BN, análogo ao bifenileno [3].Motivados por este resultado, for feito um estudo teórico de um material de Nitreto de Boro análogo ao tolaneno, o tol−BN, através de cálculos ab−initio baseados na teoria do funcional de densidade (DFT). Foram realizados cálculos de energia de coesão, relaxação e de espectro de fônons, além de cálculos de propriedades elásticas e de estrutura de bandas. Após a relaxação, foi obtido uma rede retangular com parâmetros a = 7.660 Å e b = 11.744 Å. O espectro de fônons não apresentou frequências imaginárias, sugerindo que o material é estável dinâmicamente. Foi verificado também que o material possui uma energia de coesão de −7.203 eV, semelhante à energia de coesão do tolaneno e de outros materiais de nitreto de boro. Para as propriedades mecânicas, foram obtidos módulos de Young de Ea = 162.34 N/m e Eb = 184.96 N/m, e coeficientes de Poisson de νa = 0.23 e νb = 0.20, indicando uma anisotropia menor em relação ao tolaneno. Adicionalmente, foi verificado que os coeficientes de elasticidade do material cumprem o critério geral de estabilidade mecânica. Por fim, através do cálculo de estrutura de bandas, foi verificado que o material é um isolante, com um gap direto de 3.83 eV. Foi investigada também a dependência da energia do gap com tensões uniaxiais e biaxiais, para verificar a tunabilidade do material, e a sua aplicabilidade em dispositivos opto−eletrônicos.</span><span class='toggle-resumo' style='cursor:pointer;color:blue;'>Ver mais</span></td><td>DFT, MATERIAIS BIDIMENSIONAIS, NANOMATERIAIS, TOL-BN</td><td></td><td></td><td>Matéria Condensada, Nanociências</td><td>Diurno</td></tr>
@@ -915,204 +794,146 @@
             <tr data-trabalho-id='6734'><td>6734</td><td>ESTERIFICAÇÃO OXIDATIVA DO HMF USANDO CATALISADORES DE AU/HIDROCALUMITA</td><td>DIOGO SOUZA DE CARVALHO - Engenharia Quimica - CT</td><td>DIOGO SOUZA DE CARVALHO - Engenharia Quimica - CT</td><td>CAMILA PALOMBO FERRAZ - Instituto de Quimica - CCMN - cpferraz@iq.ufrj.br</td><td class='unidade-cell'>IQ</td><td>Pesquisa</td><td>Oral</td><td class='resumo-col'><span class='resumo-curto'>A crescente demanda de energia e insumos tem exigido um grande consumo de produtos fósseis.1−3 Contudo, as questões envolvidas com o esgotamento dos recursos naturais, com o aquecimento global e mudan…</span><span class='resumo-completo' style='display:none;'>A crescente demanda de energia e insumos tem exigido um grande consumo de produtos fósseis.1−3 Contudo, as questões envolvidas com o esgotamento dos recursos naturais, com o aquecimento global e mudanças climáticas exigem a utilização de fontes alternativas na produção que minimizem impactos ambientais.1−3 A biomassa vegetal, em especial a lignocelulósica, se mostra como a principal fonte de bioderivados, a partir da qual produtos de maior valor agregado podem ser gerados.1−3 O hidroximetilfurfural (HMF) é considerado um composto plataforma em biorrefinarias, devido a seu potencial na produção de combustíveis, solventes e plásticos.2,3 A esterificação oxidativa (EO) do HMF produz o éster furan−2,5−dimetilcarboxilato (FDMC), monômero precursor para a formação do 2,5−furanodicarboxilato de polietileno (PEF). 2,3 Esse polímero se mostra como um substituto verde para o tereftalato de polietileno (PET − derivado do petróleo).  Os catalisadores de Au, que permitem a obtenção do éster em etapa única a partir do HMF, normalmente exigem o uso de um promotor básico. Esse trabalho visa desenvolver um suporte com características básicas que evitem o uso de base nessa reação. A hidrocalumita (HC) (Ca4Al2O6Cl2.4H2O) é da família da hidrotalcita, e devido a presença de íons Ca2+ em sua estrutura, esse tipo de material tem maior basicidade associada. Por isso, catalisadores de Au foram preparados a partir de uma HC razão molar Ca/Al=2. Duas metologias de síntese dos catalisadores de Au foram empregadas: impregnação ao ponto úmido (incipient wetness impregnation − IWI) e imobilização de nanopartículas (NPs) metálicas pelo método sol−gel. Esses catalisadores serão testados na EO do furfural (FF), composto previamente estudado e usado como modelo, e do HMF. A HC (Ca4Al2O6Cl2.10H2O) foi sintetizada utilizando o método de coprecipitação baseado na metodologia reportada. 4 Pelo método de IWI, uma solução metanólica do precursor de Au (HAuCl4) foi gotejada ao suporte em volume inferior ao volume de poros. Em seguida, realizou−se a secagem a 110 ºC durante a noite. Por fim, as amostras foram reduzidas em H2 (50 mL min−1) a 150 ºC (5 ºC min−1) por 2 h. Pelo método sol−gel adaptado, NPs de Au foram preparadas em metanol e imobilizadas na HC.2 Os testes catalíticos serão realizados em um reator em batelada em que será adicionada uma solução metanólica de FF, catalisador de Au (FF:Au = 100) sob 110 ºC, 6 bar O2, 600 rpm. Em um estudo prévio do grupo, observou−se uma lixiviação dos óxidos básicos (MO, M = Mg, Ca, Sr, Ba) durante a preparação do catalisador pelo método sol−gel. Por isso, o estudo prevê o uso da HC, um óxido misto mais resistente à água e de elevada basicidade. A HC caracterizada por difração de raios−X apresentou os picos característicos em 11,3°, 22,8° 23,6°, 31,3°, 39,0° e 42,7° de acordo com uma estrutura monoclínica (JCPDS 31−0245).4 Dessa forma, esse estudo para a produção do FDMC em única etapa a partir de catalisadores de Au se mostra promissor.</span><span class='toggle-resumo' style='cursor:pointer;color:blue;'>Ver mais</span></td><td>Au, FDMC, hidrocalumita, hidroximentilfurfural, polietilenofuroato</td><td>Ciências Exatas e da Terra-Química-Físico-Química-Cinética Química e Catálise</td><td></td><td>Catálise, Físico-Química, Química Inorgânica</td><td>Diurno</td></tr></tbody></table>
             </tbody>
     </table>
+    </div>
 
-    <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
-    <script src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js'></script>
-    <script src='https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js'></script>
-    <script src='https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js'></script>
-    <script src='https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'></script>
-    <script src='https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js'></script>
-    <script src='https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'></script>
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center my-4"> <img src="https://sistemas2.macae.ufrj.br/siac/assets/images/LogoAtualSIAC.png" alt="Logo SIAC" class="header-logo"> <h1 class="page-title">Estatísticas - SIAc CCMN 2025</h1> </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navegação</a> <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"> <a class="nav-link" href="index.html"><i class="bi bi-table"></i> Ver Tabela de Trabalhos</a> </li>
+                        <li class="nav-item"> <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-bar-chart-line-fill"></i> Estatísticas</a> </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="mainContent">
+            <div class="stats-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6"> <h2>Resumo Geral</h2> <p>Visão geral dos trabalhos apresentados na SIAC 2025.</p> </div>
+                    <div class="col-md-3"> <label for="selectorUnidade" class="form-label">Filtrar por Unidade:</label> <select id="selectorUnidade" class="form-select"> <option value="">Todas as Unidades</option> </select> </div>
+                    <div class="col-md-3 text-end"> <div class="d-flex justify-content-end align-items-center"> <div> <h3 id="totalTrabalhos">0</h3> <p class="mb-0">Total de Trabalhos</p> </div> <div class="ms-4"> <h3 id="totalMencoes">0</h3> <p class="mb-0">Menções Honrosas</p> </div> </div> </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Trabalhos por Unidade</div><div class="card-body"><div class="filter-group"><label for="filterApresentacaoUnidade" class="form-label">Filtrar por Apresentação:</label><select id="filterApresentacaoUnidade" class="form-select"></select></div><div class="chart-container"><canvas id="chartUnidades"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Trabalhos por Modalidade</div><div class="card-body"><div class="filter-group"><label for="filterApresentacaoModalidade" class="form-label">Filtrar por Apresentação:</label><select id="filterApresentacaoModalidade" class="form-select"></select></div><div class="chart-container"><canvas id="chartModalidades"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Menções Honrosas por Modalidade</div><div class="card-body"><div class="filter-group"><label for="filterApresentacaoMencoes" class="form-label">Filtrar por Apresentação:</label><select id="filterApresentacaoMencoes" class="form-select"></select></div><div class="chart-container"><canvas id="chartMencoes"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Percentual de Menções por Modalidade</div><div class="card-body"><div class="filter-group"><label for="filterApresentacaoPercentual" class="form-label">Filtrar por Apresentação:</label><select id="filterApresentacaoPercentual" class="form-select"></select></div><div class="chart-container"><canvas id="chartPercentualMencoes"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Trabalhos por Turno</div><div class="card-body"><div class="mb-3"><label for="selectorModalidadeTurno" class="form-label">Filtrar por Modalidade:</label><select id="selectorModalidadeTurno" class="form-select"></select></div><div class="chart-container"><canvas id="chartTurnos"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card stats-card"><div class="card-header">Menções por Unidade e Modalidade</div><div class="card-body"><div class="chart-container"><canvas id="chartMencoesUnidade"></canvas></div></div></div></div>
+                <div class="col-md-12"><div class="card stats-card"><div class="card-header">Resumo Detalhado por Unidade</div><div class="card-body"><div class="table-responsive"><table class="table table-striped table-bordered summary-table"><thead><tr><th>Unidade</th><th>Total</th><th>Menções</th><th>% Menções</th><th>Modalidades Predominantes</th><th>Turnos Predominantes</th></tr></thead><tbody id="tabelaResumo"></tbody></table></div></div></div></div>
+            </div>
+        </div>
+    </div>
 
     <script>
-    // PASSO 1: Adicione aqui a lista de IDs dos trabalhos com menção honrosa.
-    const mencaoHonrosaIds = new Set([
-    ]);
+        // PASSO 2: COLE A LISTA DE IDs DE MENÇÃO HONROSA AQUI
+        const mencaoHonrosaIds = new Set([
+            201,291,385,425,484,644,328,739,752,775,932,971,984,1021,1041,950,1145,1336,1426,1459,1502,1577,1587,1630,1752,1818,1898,1906,1978,2018,2277,2290,351,2451,2727,2871,2690,2989,3113,2824,3285,3399,3417,3445,3456,2322,3625,3716,3765,1190,3457,3921,1415,3938,3526,3586,4072,4253,4259,3458,4516,4616,4660,4785,4793,1787,3886,4897,4917,4942,4157,4998,5011,5127,4233,5236,3380,5264,5294,5411,5439,5277,5591,3764,2835,5697,5735,5781,5018,255,5908,5358,5315,1699,5010,6146,2145,6150,6162,4743,6285,6357,4987,5995,6347,6673,6593,6734,1620,5282,541,2991,973,787,4531,2698,3240,703,5148,931,2980,2117,1427,5600,3571,5227,2162,5076,1239,3157,2503,4194,1332,3112,945,2309,3712,1291,2723,5961,4977,4864,3114,3680,4981,3192,3495,516,1279,347,2282,5572,3331,551,5249,4368,3545,3267,4184,5368,3536,2103,3275,4295,5303,1007,1844,19,497,600,3482,5123,3790,1703,5837,4278,6634,1663,6620,5151,5604,5000,3333,2789,6447,5699,6480,6215,4198,4599,1565,173,3606,1563,4993,3233,1601,5459,4104,1456,5720,6507,4807,3862,4870,4911,3781,977,2960,
+        ]);
+        
+        const CHART_COLORS = ['#0056b3', '#00a896', '#f0a000', '#e53d00', '#6c757d', '#6f42c1', '#198754', '#d63384'];
 
-    const STATIC_COLUMN_DISPLAY_NAMES = ["ID", "Título", "Apresentador(es)", "Autor(es)", "Orientador(es)", "Unidade", "Modalidade", "Tipo de Apresentação", "Resumo", "Palavras-chave", "Área de Conhecimento", "Linhas de Extensão", "Área Temática", "Turno", "Menção Honrosa"];
-    let staticDataTable;
-
-    function getColumnIndex(columnName) {
-        return STATIC_COLUMN_DISPLAY_NAMES.indexOf(columnName);
-    }
-
-    function populateFilterOptions(dataTable, columnNames) {
-        columnNames.forEach(columnName => {
-            const columnIndex = getColumnIndex(columnName);
-            let idSuffix = '';
-            if (columnName === 'Unidade') idSuffix = 'Unidade';
-            else if (columnName === 'Modalidade') idSuffix = 'Modalidade';
-            else if (columnName === 'Tipo de Apresentação') idSuffix = 'TipoApresentacao';
-            else if (columnName === 'Turno') idSuffix = 'Turno'; 
-            else return;
-            const finalSelectId = `#filtro${idSuffix}Static`;
-            const $select = $(finalSelectId);
-            if ($select.length === 0 || columnIndex === -1) return;
-            if (columnName === 'Turno') return;
-            if ($select.find('option').length <= 1) { 
-                const uniqueValues = dataTable.column(columnIndex).data().unique().sort();
-                uniqueValues.each(function (value) {
-                    if (value && String(value).trim() !== "") {
-                        $select.append($('<option>', { value: value, text: value }));
-                    }
-                });
+        function processarDadosLocais() {
+            try {
+                const container = document.getElementById('dados-brutos');
+                const tabela = container.querySelector('#trabalhosTableStatic');
+                if (!tabela) { throw new Error("Tabela de dados não encontrada. Verifique se a tabela HTML foi colada corretamente."); }
+                
+                const colunas = { UNIDADE: 5, MODALIDADE: 6, APRESENTACAO: 7, TURNO: 13 };
+                const linhas = tabela.querySelectorAll('tbody tr');
+                
+                return Array.from(linhas).map(linha => {
+                    const celulas = linha.querySelectorAll('td');
+                    const trabalhoIdAttr = linha.getAttribute('data-trabalho-id');
+                    if (celulas.length < 14 || !trabalhoIdAttr) return null;
+                    const trabalhoId = parseInt(trabalhoIdAttr, 10);
+                    
+                    return { id: trabalhoId, unidade: celulas[colunas.UNIDADE].textContent.trim() || 'Sem Unidade', modalidade: celulas[colunas.MODALIDADE].textContent.trim(), apresentacao: celulas[colunas.APRESENTACAO].textContent.trim(), turno: celulas[colunas.TURNO].textContent.trim(), mencao_honrosa: mencaoHonrosaIds.has(trabalhoId) };
+                }).filter(item => item !== null);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('mainContent').innerHTML = `<div class="alert alert-danger"><strong>Erro ao processar dados:</strong> ${error.message}</div>`;
+                return [];
             }
-        });
-    }
-    
-    function applyAllStaticFilters() {
-        if (!staticDataTable) return;
-        staticDataTable.columns().search('').draw(); 
-        $('.filterable-select').each(function() {
-            const $select = $(this);
-            const filterValue = $select.val();
-            const columnName = $select.data('column-name');
-            const columnIndex = getColumnIndex(columnName);
-            if (filterValue && columnIndex !== -1) {
-                if (columnName === 'Unidade' && filterValue === "sem-unidade-static") {
-                    staticDataTable.column(columnIndex).search('^$', true, false);
-                } else {
-                    staticDataTable.column(columnIndex).search('^' + $.fn.dataTable.util.escapeRegex(filterValue) + '$', true, false);
-                }
-            } else if (columnIndex !== -1) {
-                staticDataTable.column(columnIndex).search('');
-            }
-        });
-        staticDataTable.draw();
-    }
-
-    function updateFilterCounts() {
-        if (!staticDataTable) return;
-        const totalVisibleRows = staticDataTable.page.info().recordsDisplay;
-        $('#totalTrabalhosCount').text(totalVisibleRows);
-    }
-
-    function exportPlanilhaTrabalhosToXLSX() { 
-        if (!staticDataTable) { alert("Tabela não iniciada."); return; }
-        const allFilteredDataArray = staticDataTable.rows({ search: 'applied' }).data().toArray();
-        if (allFilteredDataArray.length === 0) { alert("Nenhum dado para exportar com os filtros atuais."); return; }
-        const targetModalidades = ["Pesquisa", "Extensão", "Ensino-Pesquisa-Extensão"];
-        const modalidadeColumnIndex = getColumnIndex('Modalidade');
-        const idColumnIndex = getColumnIndex('ID');
-        const wb = XLSX.utils.book_new();
-        let sheetsAdded = 0;
-        targetModalidades.forEach(modalidadeName => {
-            let modalityDataArray = allFilteredDataArray.filter(rowArray => rowArray[modalidadeColumnIndex] === modalidadeName);
-            if (modalityDataArray.length > 0) {
-                modalityDataArray.sort((a, b) => {
-                    const idA = parseInt(a[idColumnIndex], 10) || 0;
-                    const idB = parseInt(b[idColumnIndex], 10) || 0;
-                    return idA - idB;
-                });
-                const sheetDataForModality = modalityDataArray.map(rowArray => {
-                    let obj = {};
-                    STATIC_COLUMN_DISPLAY_NAMES.forEach((header, index) => {
-                        let cellContent = rowArray[index];
-                        if (header === 'Resumo' && typeof cellContent === 'string' && cellContent.includes('<span')) {
-                            const tempDiv = $('<div>').html(cellContent);
-                            const fullResumo = tempDiv.find('.resumo-completo').text();
-                            const shortResumo = tempDiv.find('.resumo-curto').text();
-                            cellContent = fullResumo || shortResumo || tempDiv.text();
-                        }
-                        obj[header] = cellContent;
-                    });
-                    return obj;
-                });
-                const ws = XLSX.utils.json_to_sheet(sheetDataForModality, { header: STATIC_COLUMN_DISPLAY_NAMES });
-                if (ws['!ref']) { 
-                    const range = XLSX.utils.decode_range(ws['!ref']);
-                    ws['!cols'] = []; 
-                    for (let C = range.s.c; C <= range.e.c; ++C) {
-                        const headerCellAddress = XLSX.utils.encode_cell({ c: C, r: 0 });
-                        if (ws[headerCellAddress]) ws[headerCellAddress].s = { font: { bold: true } };
-                        let maxColumnWidth = (STATIC_COLUMN_DISPLAY_NAMES[C] || "").length;
-                        for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-                            const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
-                            if (ws[cellAddress] && ws[cellAddress].v) {
-                                const cellLength = String(ws[cellAddress].v).length;
-                                if (cellLength > maxColumnWidth) maxColumnWidth = cellLength;
-                            }
-                        }
-                        ws['!cols'][C] = { wch: Math.min(Math.max(maxColumnWidth, 10), 70) };
-                    }
-                }
-                let safeSheetName = modalidadeName.replace(/[\\/*?:[\]]/g, '').substring(0, 30);
-                XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
-                sheetsAdded++;
-            }
-        });
-        if (sheetsAdded === 0) { alert("Nenhum trabalho encontrado para as modalidades 'Pesquisa', 'Extensão' ou 'Ensino-Pesquisa-Extensão' com os filtros atuais para gerar abas no Excel."); return; }
-        let filenameParts = ["Planilha_Trabalhos_SIAC"];
-        let filtersAppliedForFilename = false;
-        if ($('#filtroUnidadeStatic').val() && $('#filtroUnidadeStatic').val() !== "sem-unidade-static") {
-             filenameParts.push($('#filtroUnidadeStatic option:selected').text().replace(/\s+/g, '')); filtersAppliedForFilename = true;
-        } else if ($('#filtroUnidadeStatic').val() === "sem-unidade-static") {
-            filenameParts.push("SemUnidade"); filtersAppliedForFilename = true;
         }
-        if ($('#filtroModalidadeStatic').val()) { filenameParts.push($('#filtroModalidadeStatic option:selected').text().replace(/\s+/g, '')); filtersAppliedForFilename = true; }
-        if ($('#filtroTipoApresentacaoStatic').val()) { filenameParts.push($('#filtroTipoApresentacaoStatic option:selected').text().replace(/\s+/g, '')); filtersAppliedForFilename = true; }
-        if ($('#filtroTurnoStatic').val()) { filenameParts.push($('#filtroTurnoStatic option:selected').text().replace(/\s+/g, '')); filtersAppliedForFilename = true; }
-        if ($('#filtroMencaoHonrosaStatic').val()) { filenameParts.push('Mencao' + $('#filtroMencaoHonrosaStatic option:selected').text()); filtersAppliedForFilename = true; }
-        if (!filtersAppliedForFilename) { filenameParts.push("Geral"); }
-        const filename = `${filenameParts.join('_').replace(/[^a-zA-Z0-9_]/g, '')}.xlsx`;
-        XLSX.writeFile(wb, filename);
-    }
 
-    $(document).ready(function() {
-        // Adiciona o cabeçalho da nova coluna
-        $('#trabalhosTableStatic thead tr').append('<th>Menção Honrosa</th>');
+        function criarGrafico(ctx, type, data, options) { const canvasId = ctx.canvas.id; if (window.graficos && window.graficos[canvasId]) { window.graficos[canvasId].destroy(); } window.graficos = window.graficos || {}; window.graficos[canvasId] = new Chart(ctx, { type, data, options }); }
+        
+        function criarGraficoBarras(canvasId, dados, titulo) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const options = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: titulo }, datalabels: { anchor: 'end', align: 'end', color: '#555', font: { weight: 'bold' } } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } };
+            const chartData = { labels: Object.keys(dados), datasets: [{ data: Object.values(dados), backgroundColor: CHART_COLORS }] };
+            criarGrafico(ctx, 'bar', chartData, options);
+        }
 
-        // Itera sobre cada linha do corpo da tabela para adicionar a nova célula
-        $('#trabalhosTableStatic tbody tr').each(function() {
-            const $row = $(this);
-            const trabalhoId = parseInt($row.attr('data-trabalho-id'), 10);
+        function criarGraficoPizza(canvasId, dados, titulo) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const total = Object.values(dados).reduce((a, b) => a + b, 0);
             
-            // MODIFICADO: Verifica se o ID está na lista e adiciona o ícone ou uma célula vazia.
-            if (mencaoHonrosaIds.has(trabalhoId)) {
-                // Adiciona um ícone de check e um texto "Sim" invisível para o filtro funcionar
-                $row.append('<td class="text-center"><span style="display:none;">Sim</span><i class="bi bi-check-square-fill text-success fs-5"></i></td>');
-            } else {
-                // Adiciona um texto "Não" invisível e deixa a célula visualmente vazia
-                $row.append('<td><span style="display:none;">Não</span></td>');
-            }
-        });
-
-        // Agora, inicializa o DataTable.
-        staticDataTable = $('#trabalhosTableStatic').DataTable({
-            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
-            responsive: true,
-            pageLength: 25,
-            lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"] ],
-            dom: 'lBrtip', 
-            buttons: [ 
-                { extend: 'copyHtml5', text: '<i class="bi bi-files"></i> Copiar' }
-            ],
-            initComplete: function() {
-                populateFilterOptions(this.api(), ['Modalidade', 'Tipo de Apresentação', 'Turno']);
-                updateFilterCounts();
-            }
-        });
-
-        $('#trabalhosTableStatic tbody').on('click', '.toggle-resumo', function() {
-            const c = $(this).closest('td');
-            c.find('.resumo-curto, .resumo-completo').toggle();
-            $(this).text($(this).text() === 'Ver mais' ? 'Ver menos' : 'Ver mais');
-        });
-
-        $('.filterable-select').on('change', function() {
-            applyAllStaticFilters(); 
-        });
+            // CORREÇÃO APLICADA AQUI
+            const options = { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { display: total > 0, position: 'right' }, 
+                    title: { display: true, text: titulo }, 
+                    datalabels: { 
+                        color: '#fff', 
+                        font: { weight: 'bold', size: 12 }, 
+                        formatter: (value) => { 
+                            if (total === 0) return ''; // Não mostra nada se o total for zero
+                            const percentage = (value / total) * 100; 
+                            return percentage > 5 ? `${value}\n(${percentage.toFixed(1)}%)` : ''; 
+                        } 
+                    }
+                }
+            };
+            const chartData = { labels: Object.keys(dados), datasets: [{ data: Object.values(dados), backgroundColor: CHART_COLORS }] };
+            criarGrafico(ctx, 'pie', chartData, options);
+        }
         
-        staticDataTable.on('draw.dt', function() {
-            updateFilterCounts();
-        });
-
-        $('#exportPlanilhaTrabalhosBtn').on('click', exportPlanilhaTrabalhosToXLSX);
+        function atualizarGraficoPercentualMencoes() {
+            const dados = getFilteredDataWithApresentacao('filterApresentacaoPercentual');
+            const totalPorModalidade = contarOcorrencias(dados, 'modalidade');
+            const mencoesPorModalidade = contarOcorrencias(dados.filter(d => d.mencao_honrosa), 'modalidade');
+            const percentuais = {}; Object.keys(totalPorModalidade).forEach(m => { percentuais[m] = (totalPorModalidade[m] > 0) ? ((mencoesPorModalidade[m] || 0) / totalPorModalidade[m]) * 100 : 0; });
+            const ctx = document.getElementById('chartPercentualMencoes').getContext('2d');
+            const options = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Percentual de Menções por Modalidade' }, datalabels: { anchor: 'end', align: 'end', color: '#333', formatter: (value) => value > 0 ? value.toFixed(1) + '%' : '' }, tooltip: { callbacks: { label: (c) => `${(mencoesPorModalidade[c.label] || 0)} de ${totalPorModalidade[c.label]} (${parseFloat(c.raw).toFixed(1)}%)` } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } };
+            const chartData = { labels: Object.keys(percentuais), datasets: [{ data: Object.values(percentuais), backgroundColor: '#198754' }] };
+            criarGrafico(ctx, 'bar', chartData, options);
+        }
         
-        applyAllStaticFilters(); 
-    });
+        let todosDados = [];
+        function contarOcorrencias(dados, campo) { return dados.reduce((acc, curr) => { const valor = curr[campo] || 'N/D'; acc[valor] = (acc[valor] || 0) + 1; return acc; }, {}); }
+        function getFilteredData() { const unidade = document.getElementById('selectorUnidade').value; return unidade ? todosDados.filter(d => d.unidade === unidade) : todosDados; }
+        function getFilteredDataWithApresentacao(filterId) { let dados = getFilteredData(); const apresentacao = document.getElementById(filterId).value; return apresentacao ? dados.filter(d => d.apresentacao === apresentacao) : dados; }
+        function atualizarGraficoUnidades() { const dados = getFilteredDataWithApresentacao('filterApresentacaoUnidade'); criarGraficoBarras('chartUnidades', contarOcorrencias(dados, 'unidade'), 'Trabalhos por Unidade'); }
+        function atualizarGraficoModalidades() { const dados = getFilteredDataWithApresentacao('filterApresentacaoModalidade'); criarGraficoPizza('chartModalidades', contarOcorrencias(dados, 'modalidade'), 'Trabalhos por Modalidade'); }
+        function atualizarGraficoMencoes() { const dados = getFilteredDataWithApresentacao('filterApresentacaoMencoes').filter(d => d.mencao_honrosa); criarGraficoPizza('chartMencoes', contarOcorrencias(dados, 'modalidade'), 'Menções Honrosas por Modalidade'); }
+        function atualizarGraficoTurnos() { let dados = getFilteredData(); const modalidade = document.getElementById('selectorModalidadeTurno').value; if (modalidade) dados = dados.filter(d => d.modalidade === modalidade); criarGraficoBarras('chartTurnos', contarOcorrencias(dados, 'turno'), 'Trabalhos por Turno'); }
+        function atualizarGraficoMencoesUnidade() { const dados = getFilteredData().filter(d => d.mencao_honrosa); const contagem = dados.reduce((acc, { unidade, modalidade }) => { const chave = `${unidade} - ${modalidade}`; acc[chave] = (acc[chave] || 0) + 1; return acc; }, {}); criarGraficoBarras('chartMencoesUnidade', contagem, 'Menções por Unidade e Modalidade'); }
+        function atualizarTabelaResumo() { const tabelaBody = document.getElementById('tabelaResumo'); tabelaBody.innerHTML = ''; [...new Set(todosDados.map(d => d.unidade))].sort().forEach(unidade => { const dadosUnidade = todosDados.filter(d => d.unidade === unidade); const total = dadosUnidade.length; const mencoes = dadosUnidade.filter(d => d.mencao_honrosa).length; const modalidades = Object.entries(contarOcorrencias(dadosUnidade, 'modalidade')).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} (${v})`).join('<br>'); const turnos = Object.entries(contarOcorrencias(dadosUnidade, 'turno')).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} (${v})`).join(', '); tabelaBody.innerHTML += `<tr><td>${unidade}</td><td>${total}</td><td>${mencoes}</td><td>${total > 0 ? (mencoes/total*100).toFixed(1) : 0}%</td><td>${modalidades}</td><td>${turnos}</td></tr>`; }); }
+        function atualizarContadores() { const dados = getFilteredData(); document.getElementById('totalTrabalhos').textContent = dados.length; document.getElementById('totalMencoes').textContent = dados.filter(t => t.mencao_honrosa).length; }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            Chart.register(ChartDataLabels);
+            
+            todosDados = processarDadosLocais();
+            
+            const popularSelect = (id, valores) => { const select = document.getElementById(id); select.innerHTML = `<option value="">Todas</option>${valores.map(v => `<option value="${v}">${v}</option>`).join('')}`; };
+            const unidades = [...new Set(todosDados.map(t => t.unidade))].sort(); popularSelect('selectorUnidade', unidades);
+            const apresentacoes = [...new Set(todosDados.map(t => t.apresentacao))].sort(); ['filterApresentacaoUnidade', 'filterApresentacaoModalidade', 'filterApresentacaoMencoes', 'filterApresentacaoPercentual'].forEach(id => popularSelect(id, apresentacoes));
+            const modalidades = [...new Set(todosDados.map(t => t.modalidade))].sort(); popularSelect('selectorModalidadeTurno', modalidades);
+            
+            const updateAll = () => { atualizarContadores(); atualizarGraficoUnidades(); atualizarGraficoModalidades(); atualizarGraficoMencoes(); atualizarGraficoPercentualMencoes(); atualizarGraficoTurnos(); atualizarGraficoMencoesUnidade(); atualizarTabelaResumo(); };
+            document.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateAll));
+            updateAll();
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
